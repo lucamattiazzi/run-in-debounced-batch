@@ -1,4 +1,3 @@
-// eslint-disable @typescript-eslint/no-explicit-any
 type BatchFunction<I extends any[] = any[], O = any> = (args: I) => Promise<O[]>
 
 type SingleInput<T extends BatchFunction> = Array<any> & (Parameters<T> extends Array<infer K> ? K : never)

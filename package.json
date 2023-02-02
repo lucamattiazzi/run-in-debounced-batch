@@ -16,11 +16,12 @@
     "test": "tsdx test",
     "test:watch": "tsdx test --watch",
     "lint": "tsdx lint",
-    "prepare": "tsdx build",
     "size": "size-limit",
     "analyze": "size-limit --why"
   },
-  "peerDependencies": {},
+  "resolutions": {
+    "tsdx/typescript": "^4.9.5"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "tsdx lint"
@@ -49,6 +50,7 @@
     "@size-limit/preset-small-lib": "^8.1.2",
     "husky": "^8.0.3",
     "size-limit": "^8.1.2",
+    "tsc": "^2.0.4",
     "tsdx": "^0.14.1",
     "tslib": "^2.5.0",
     "typescript": "^4.9.5"
