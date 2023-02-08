@@ -4,20 +4,20 @@ type SingleInput<T extends BatchFunction> = Array<any> & (Parameters<T> extends 
 type SingleOutput<T extends BatchFunction> = Awaited<ReturnType<T>> extends Array<infer K> ? K : never
 type SingleFunction<T extends BatchFunction> = (...args: SingleInput<T>) => Promise<SingleOutput<T>>
 
-export function runInDebouncedBatch(
-  fn: BatchFunction,
+export function runInDebouncedBatch<T extends BatchFunction>(
+  fn: T,
   timeoutLength = 1000
-): SingleFunction<typeof fn> {
-  type Resolver = (results: SingleOutput<typeof fn>) => void
+): SingleFunction<T> {
+  type Resolver = (results: SingleOutput<T>) => void
   type Rejecter = (reason: any) => void
 
-  let argsList: SingleInput<typeof fn>[] = []
+  let argsList: SingleInput<T>[] = []
   let resolversList: [Resolver, Rejecter][] = []
   let timeout: NodeJS.Timeout
 
   async function batchCall(): Promise<void> {
     try {
-      const results: Awaited<ReturnType<typeof fn>> = await fn(argsList)
+      const results: Awaited<ReturnType<T>> = await fn(argsList)
       for (const idx in results) {
         const result = results[idx]
         const [resolve] = resolversList[idx]
@@ -32,11 +32,11 @@ export function runInDebouncedBatch(
     resolversList = []
   }
 
-  function singleCall(...args: SingleInput<typeof fn>): Promise<SingleOutput<typeof fn>> {
+  function singleCall(...args: SingleInput<T>): Promise<SingleOutput<T>> {
     clearTimeout(timeout)
     argsList.push(args)
     timeout = setTimeout(() => batchCall(), timeoutLength)
-    return new Promise<SingleOutput<typeof fn>>((res, rej) => resolversList.push([res, rej]))
+    return new Promise<SingleOutput<T>>((res, rej) => resolversList.push([res, rej]))
   }
 
   return singleCall
